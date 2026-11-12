@@ -122,6 +122,10 @@ public class MainActivity extends Activity {
             public void onReceive(Context c, Intent i) {
                 updateClock();
                 applyPeriod(false);
+                // TV parada na tela inicial: a cada minuto vê se alguma lista venceu (só baixa se venceu)
+                // e aplica as que chegaram enquanto o cursor estava na fileira, se ele já saiu dela.
+                refreshIfStale();
+                flushPending(true);
             }
         };
         IntentFilter f = new IntentFilter(Intent.ACTION_TIME_TICK);
@@ -145,12 +149,16 @@ public class MainActivity extends Activity {
     protected void onStop() {
         super.onStop();
         // Fileiras que chegaram enquanto o foco estava nelas: aplica agora, com a tela escondida.
+        flushPending(false);
+    }
+
+    /** Aplica as listas que ficaram esperando; onlyUnfocused = só nas fileiras sem o cursor. */
+    private void flushPending(boolean onlyUnfocused) {
         for (Section s : new Section[]{crCont, hist, crList, anime, rec, subs}) {
-            if (s.pending != null) {
-                String p = s.pending;
-                s.pending = null;
-                if (s == anime) renderAnime(p); else renderYoutube(p);
-            }
+            if (s.pending == null || (onlyUnfocused && s.root.hasFocus())) continue;
+            String p = s.pending;
+            s.pending = null;
+            if (s == anime) renderAnime(p); else renderYoutube(p);
         }
     }
 
