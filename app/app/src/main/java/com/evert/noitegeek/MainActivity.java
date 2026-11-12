@@ -273,7 +273,14 @@ public class MainActivity extends Activity {
         }));
         side.addView(sideItem(R.drawable.ic_apps, "Apps",
                 v -> startActivity(new Intent(this, AppsActivity.class))));
-        side.addView(sideItem(R.drawable.ic_tv, "TV", v -> openLiveTv()));
+        // Antena e HDMIs num painel; sem entradas na TV (ou sem o serviço), abre o app de TV como antes.
+        View inputsItem = sideItem(R.drawable.ic_input, "Entradas", v -> Inputs.show(this, LIVE_TV, this::openLiveTv));
+        inputsItem.setOnLongClickListener(v -> {  // segurar OK: volta direto pra última entrada usada
+            String last = Inputs.lastId(this);
+            if (last == null || !Inputs.open(this, last, LIVE_TV)) Inputs.show(this, LIVE_TV, this::openLiveTv);
+            return true;
+        });
+        side.addView(inputsItem);
         side.addView(sideItem(R.drawable.ic_settings, "Ajustes", v -> openSettings()));
         return side;
     }
@@ -424,6 +431,11 @@ public class MainActivity extends Activity {
         buildShortcuts(-1);
     }
 
+    /** Chamado pelo painel de Entradas depois de pôr/tirar uma entrada dos atalhos. */
+    void refreshShortcuts() {
+        buildShortcuts(-1);
+    }
+
     /** Monta os atalhos; focusLine >= 0 põe o foco nesse atalho depois. */
     private void buildShortcuts(int focusLine) {
         PackageManager pm = getPackageManager();
@@ -431,9 +443,20 @@ public class MainActivity extends Activity {
         List<String[]> found = new ArrayList<>();
         List<Integer> idx = new ArrayList<>();
         StringBuilder sig = new StringBuilder("m" + moving + ";");
+        java.util.Map<String, Inputs.Entry> inputs = new java.util.HashMap<>();
+        for (Inputs.Entry e : Inputs.list(this)) inputs.put(e.id, e);
+        if (Inputs.addPortsOnce(this, inputs.values())) shortcutLines = Shortcuts.load(this);
         for (int i = 0; i < shortcutLines.size(); i++) {
             String[] f = shortcutLines.get(i).split("\\|");
-            if (f.length < 4 || launchIntent(f[0]) == null) continue;
+            if (f.length < 4) continue;
+            if (Shortcuts.isInput(f[0])) {
+                Inputs.Entry e = inputs.get(Shortcuts.inputId(f[0]));
+                if (e == null) continue;
+                f[1] = e.label();  // nome atual: o que você deu na TV, ou o aparelho ligado (CEC)
+                sig.append(f[1]).append(';');
+            } else if (launchIntent(f[0]) == null) {
+                continue;
+            }
             found.add(f);
             idx.add(i);
             sig.append(shortcutLines.get(i)).append(';');
@@ -460,12 +483,30 @@ public class MainActivity extends Activity {
             pill.setForeground(Ui.focusRing(12));
             if (grabbed) pill.addView(arrow("◀", 0, Ui.dp(8)));
             ImageView ic = new ImageView(this);
-            try {
-                ic.setImageDrawable(pm.getApplicationIcon(f[0]));
-            } catch (PackageManager.NameNotFoundException ignored) {
-                // instalado sem ícone: fica só o nome
+            boolean isInput = Shortcuts.isInput(f[0]);
+            if (isInput) {
+                ic.setImageResource(R.drawable.ic_input);
+                ic.setColorFilter(Ui.ACCENT);
+                ic.setPadding(Ui.dp(2), Ui.dp(2), Ui.dp(2), Ui.dp(2));
+            } else {
+                try {
+                    ic.setImageDrawable(pm.getApplicationIcon(f[0]));
+                } catch (PackageManager.NameNotFoundException ignored) {
+                    // instalado sem ícone: fica só o nome
+                }
             }
             pill.addView(ic, new LinearLayout.LayoutParams(Ui.dp(28), Ui.dp(28)));
+            // Entradas fechadas ficam iguais: o número da porta ao lado do ícone diferencia ("HDMI 2" -> 2).
+            TextView num = null;
+            if (isInput) {
+                java.util.regex.Matcher m = java.util.regex.Pattern.compile("(\\d+)\\s*$").matcher(f[1].split(" · ")[0]);
+                String n = m.find() ? m.group(1) : f[1].substring(0, Math.min(2, f[1].length()));
+                num = Ui.text(this, n, 15, Ui.WHITE, Ui.bold);
+                num.setPadding(Ui.dp(5), 0, Ui.dp(2), 0);
+                num.setVisibility(grabbed ? View.GONE : View.VISIBLE);
+                pill.addView(num);
+            }
+            final TextView portNum = num;
             // Só o ícone; o nome aparece quando o atalho está selecionado (ou sendo movido).
             TextView t = Ui.text(this, f[1], 15, parseColor(f[3], Ui.WHITE), Ui.bold);
             t.setPadding(Ui.dp(9), 0, Ui.dp(5), 0);
@@ -475,7 +516,13 @@ public class MainActivity extends Activity {
             final String pkg = f[0];
             final String name = f[1];
             pill.setOnClickListener(v -> {
-                if (moving >= 0) stopMoving(); else launch(pkg);
+                if (moving >= 0) {
+                    stopMoving();
+                } else if (Shortcuts.isInput(pkg)) {
+                    if (!Inputs.open(this, Shortcuts.inputId(pkg), LIVE_TV)) openLiveTv();
+                } else {
+                    launch(pkg);
+                }
             });
             pill.setOnLongClickListener(v -> {
                 if (moving < 0) shortcutMenu(line, name);
@@ -483,6 +530,7 @@ public class MainActivity extends Activity {
             });
             Ui.zoomOnFocus(pill, 1.07f, (v, has) -> {
                 t.setVisibility(has || line == moving ? View.VISIBLE : View.GONE);
+                if (portNum != null) portNum.setVisibility(has || line == moving ? View.GONE : View.VISIBLE);
                 if (has) {
                     scroll.smoothScrollTo(0, 0);
                     keepVisible(pill);

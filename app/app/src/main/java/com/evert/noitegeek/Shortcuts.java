@@ -45,6 +45,19 @@ final class Shortcuts {
         c.getSharedPreferences(PREFS, Context.MODE_PRIVATE).edit().remove(KEY).apply();
     }
 
+    /** Atalho de entrada da TV: "input:<id da entrada>" no lugar do pacote. */
+    static boolean isInput(String key) {
+        return key.startsWith("input:");
+    }
+
+    static String inputId(String key) {
+        return key.substring("input:".length());
+    }
+
+    static String lineForInput(String inputId, String name) {
+        return "input:" + inputId + "|" + name.replace("|", " ") + "|#1E2638|#FFFFFF";
+    }
+
     static boolean contains(List<String> lines, String pkg) {
         for (String l : lines) if (l.startsWith(pkg + "|")) return true;
         return false;
