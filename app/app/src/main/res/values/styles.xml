@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Opaco de proposito: em alguns firmwares o DeviceDefault sai translucido e o app de TV fica rodando por baixo. -->
+    <style name="Theme.NoiteGeek" parent="android:Theme.Material.NoActionBar.Fullscreen">
+        <item name="android:windowBackground">@color/bg</item>
+        <item name="android:colorBackground">@color/bg</item>
+        <item name="android:windowIsTranslucent">false</item>
+        <item name="android:windowIsFloating">false</item>
+        <item name="android:windowSwipeToDismiss">false</item>
+        <item name="android:windowAnimationStyle">@null</item>
+        <item name="android:colorAccent">@color/accent</item>
+    </style>
+    <color name="bg">#0A0F1C</color>
+    <color name="accent">#FF7A1A</color>
+</resources>

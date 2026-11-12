@@ -1,0 +1,20 @@
+# Segredos: acesso às suas contas e o token da TV
+pc-feed/cookies*.txt
+pc-feed/*.json
+pc-feed/feed.log*
+
+# Gerados / pesados de refazer
+pc-feed/venv/
+__pycache__/
+app/.gradle/
+app/build/
+app/app/build/
+app/local.properties
+arte/log-*.txt
+
+# APKs salvos (cópias de cada versão instalada)
+salvos/
+
+# Configuração local (IPs e token)
+app/feed.properties
+instalar.conf

@@ -1,0 +1,38 @@
+plugins {
+    id 'com.android.application'
+}
+
+// Endereco e token do feed do PC: ficam em app/feed.properties, fora do git.
+def feed = new Properties()
+def feedFile = rootProject.file('feed.properties')
+if (feedFile.exists()) feedFile.withInputStream { feed.load(it) }
+
+android {
+    namespace 'com.evert.noitegeek'
+    compileSdk 34
+
+    defaultConfig {
+        applicationId 'com.evert.noitegeek'
+        minSdk 26
+        targetSdk 34
+        versionCode 1
+        versionName '1.0'
+        resValue 'string', 'feed_url', feed.getProperty('feed_url', '')
+        resValue 'string', 'feed_token', feed.getProperty('feed_token', '')
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+            // Instalado por ADB, nunca publicado: assina com a chave de debug.
+            signingConfig signingConfigs.debug
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

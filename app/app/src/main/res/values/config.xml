@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- O endereco e o token do feed do PC vem de app/feed.properties (veja feed.properties.example). -->
+
+    <!-- Atalhos coloridos, na ordem. Formato: pacote|nome|cor do fundo|cor do texto. App nao instalado e pulado. -->
+    <string-array name="shortcuts" translatable="false">
+        <item>com.crunchyroll.crunchyroid|Crunchyroll|#F47521|#FFFFFF</item>
+        <item>com.google.android.youtube.tv|YouTube|#F2F2F2|#111111</item>
+        <item>com.netflix.ninja|Netflix|#141414|#E50914</item>
+        <item>com.spotify.tv.android|Spotify|#1DB954|#FFFFFF</item>
+        <item>com.amazon.amazonvideo.livingroom|Prime Video|#1A73E8|#FFFFFF</item>
+        <item>com.globo.globotv|Globoplay|#E8322F|#FFFFFF</item>
+        <item>com.disney.disneyplus|Disney+|#0E3B8C|#FFFFFF</item>
+        <item>tv.twitch.android.app|Twitch|#9146FF|#FFFFFF</item>
+        <item>com.valvesoftware.steamlink|Steam Link|#1B2838|#FFFFFF</item>
+        <item>com.google.android.youtube.tvmusic|YT Music|#262626|#FF4E45</item>
+    </string-array>
+</resources>

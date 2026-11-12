@@ -1,0 +1,5 @@
+# Copie para feed.properties e preencha. Sem esse arquivo o app funciona, so sem as fileiras do PC.
+# feed_url: o IP do PC que roda o pc-feed, porta 8787
+# feed_token: o "token" do pc-feed/config.json (criado na primeira vez que o feed roda)
+feed_url=http://192.168.1.50:8787/feed.json
+feed_token=

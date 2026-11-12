@@ -1,0 +1,4 @@
+# Copie para instalar.conf.
+# IP da TV (Configuracoes > Rede) e a pasta do CleanYourTV, relativa a esta pasta ou absoluta.
+TV_HOST=192.168.1.50
+CLEANYOURTV=../cleanyourtv
