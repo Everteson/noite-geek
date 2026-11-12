@@ -59,6 +59,23 @@
       Um servidorzinho em Python no seu PC lê as contas e entrega uma lista pronta, só pra rede de casa, com token.
     </td>
   </tr>
+  <tr>
+    <td valign="top">
+      <img src="docs/icons/tv.svg" width="28" alt=""><br>
+      <b>Entradas HDMI e antena</b><br>
+      Botão <b>Entradas</b> no menu lateral e as portas HDMI nos atalhos, com o número da porta. Usa o nome que você deu na TV.
+    </td>
+    <td valign="top">
+      <img src="docs/icons/baixar.svg" width="28" alt=""><br>
+      <b>Volta pro videogame</b><br>
+      A última entrada usada fica no topo do painel, e segurar OK em <b>Entradas</b> volta direto pra ela.
+    </td>
+    <td valign="top">
+      <img src="docs/icons/comando.svg" width="28" alt=""><br>
+      <b>HDMI-CEC</b><br>
+      Quando a TV reconhece o aparelho, aparece o nome dele ("HDMI 1 · PlayStation 5"). Com o CEC ligado (T-Link na TCL), trocar de entrada acorda o aparelho e o controle passa a comandá-lo.
+    </td>
+  </tr>
 </table>
 
 ## Telas
@@ -71,6 +88,9 @@
   <tr>
     <td><img src="docs/img/animes.jpg" alt="Animes em alta"><br><sub><b>Em alta</b>: os animes mais populares do momento que estão na Crunchyroll, via AniList.</sub></td>
     <td><img src="docs/img/apps.jpg" alt="Todos os apps"><br><sub><b>Apps</b>: todos os apps da TV com os banners oficiais; o “+” abre esta tela pra escolher.</sub></td>
+  </tr>
+  <tr>
+    <td colspan="2" align="center"><img src="docs/img/entradas.jpg" alt="Painel de entradas" width="70%"><br><sub><b>Entradas</b>: antena e HDMIs, com a última usada no topo. Segure OK numa entrada pra pôr ou tirar dos atalhos.</sub></td>
   </tr>
 </table>
 
@@ -105,6 +125,8 @@ flowchart LR
 - O **PC** atualiza as listas a cada 40 minutos e guarda a última que deu certo. Se um cookie vencer, a fileira continua com a lista anterior em vez de sumir.
 - A **TV** só baixa um JSON pequeno e as miniaturas (que ficam em cache). Sem o PC ligado, ela mostra a última lista que recebeu.
 - Nenhuma senha passa pela TV: as contas ficam no PC, em arquivos de cookies que não vão pro git.
+- Parada na tela inicial, a TV confere a cada minuto se alguma lista venceu e só então baixa de novo.
+- **Entradas:** a lista vem da própria TV (`TvInputManager`) e a troca é o pedido padrão do Android (abrir o endereço da entrada como canal), que na TCL quem atende é o app de TV dela. Testado na TCL: Antena, HDMI 1, 2 e 3.
 
 ## Antes: limpar a TV com o CleanYourTV
 
@@ -179,6 +201,12 @@ Faça como o CleanYourTV manda, nesta ordem (o `tools/disable.sh` dele tem as tr
 | **Segurar OK** num atalho | menu: mover, remover, adicionar outro, voltar ao padrão |
 | **◀ ▶** depois de “Mover” | leva o atalho pro lado; **OK** solta |
 | **Segurar OK** num app (tela Apps) | coloca ele nos atalhos |
+| **OK** em **Entradas** (menu lateral) | painel com antena e HDMIs |
+| **Segurar OK** em **Entradas** | volta direto pra última entrada usada |
+| **Segurar OK** numa entrada do painel | põe ou tira ela dos atalhos |
+
+> [!NOTE]
+> Comandos HDMI-CEC próprios (ligar ou desligar um aparelho, por exemplo) o Android só deixa pra apps do sistema. O Noite Geek troca de entrada do jeito padrão, e a TV cuida do CEC sozinha.
 | **Home** ou **Voltar** | volta pro topo |
 | **Menu** | abre as Configurações da TV |
 
