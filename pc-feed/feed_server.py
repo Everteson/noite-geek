@@ -244,6 +244,8 @@ def main():
             self.send_header("Cache-Control", "no-store")
             self.end_headers()
             self.wfile.write(body)
+            if ip != "127.0.0.1":
+                log("tv buscou a lista (%s)" % ip)
 
         def log_message(self, fmt, *args):
             pass
